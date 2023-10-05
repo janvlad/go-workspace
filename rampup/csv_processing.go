@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strconv"
 )
 
 type transaction struct {
@@ -26,6 +27,22 @@ func check(e error) {
 	if e != nil {
 		panic(e)
 	}
+}
+
+func transactionAverage(commodity, country, weekday string, transactions map[int]*transaction) float64 {
+
+	var sumOfValues, counter float64
+
+	for _, currentTransaction := range transactions {
+
+		if currentTransaction.country == country && currentTransaction.commodity == commodity && currentTransaction.weekday == weekday {
+			temp, _ := strconv.ParseFloat(currentTransaction.value, 64)
+			sumOfValues += temp
+			counter++
+		}
+	}
+
+	return (sumOfValues / counter)
 }
 
 func main() {
