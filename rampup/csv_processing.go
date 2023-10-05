@@ -12,6 +12,10 @@ type transaction struct {
 	direction, year, date, weekday, country, commodity, transport_mode, measure, value, cumulative string
 }
 
+type directionValues struct {
+	imports, exports int
+}
+
 func NewTransaction(direction, year, date, weekday, country, commodity, transport_mode, measure, value, cumulative string) *transaction {
 
 	t := transaction{
@@ -21,6 +25,12 @@ func NewTransaction(direction, year, date, weekday, country, commodity, transpor
 	}
 
 	return &t
+}
+
+func NewDirectionValues(importsValue, exportsValue int) *directionValues {
+
+	dV := directionValues{imports: importsValue, exports: exportsValue}
+	return &dV
 }
 
 func Check(e error) {
@@ -45,7 +55,7 @@ func TransactionAverage(commodity, country, weekday string, transactions map[int
 	return (sumOfValues / counter)
 }
 
-func LogExports(commodity string, transactions map[int]*transaction) string {
+func CommodityExports(commodity string, transactions map[int]*transaction) string {
 
 	exportsByLocation := map[string]int{}
 	var biggestExporter string
@@ -68,6 +78,24 @@ func LogExports(commodity string, transactions map[int]*transaction) string {
 	}
 
 	return biggestExporter
+}
+
+func DirectionByWeekday(transactions map[int]*transaction) map[string]*directionValues {
+
+	impAndExpByWeekday := map[string]*directionValues{}
+
+	for _, currentTransaction := range transactions {
+
+		if currentTransaction.direction == "Imports" {
+			temp, _ := strconv.Atoi(currentTransaction.value)
+			impAndExpByWeekday[currentTransaction.weekday].imports += temp
+		} else if currentTransaction.direction == "Exports" {
+			temp, _ := strconv.Atoi(currentTransaction.value)
+			impAndExpByWeekday[currentTransaction.weekday].exports += temp
+		}
+	}
+
+	return impAndExpByWeekday
 }
 
 func main() {
