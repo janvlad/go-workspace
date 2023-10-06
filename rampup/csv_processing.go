@@ -86,6 +86,10 @@ func DirectionByWeekday(transactions map[int]*transaction) map[string]*direction
 
 	for _, currentTransaction := range transactions {
 
+		if impAndExpByWeekday[currentTransaction.weekday] == nil {
+			impAndExpByWeekday[currentTransaction.weekday] = NewDirectionValues(0, 0)
+		}
+
 		if currentTransaction.direction == "Imports" {
 			temp, _ := strconv.Atoi(currentTransaction.value)
 			impAndExpByWeekday[currentTransaction.weekday].imports += temp
@@ -121,6 +125,10 @@ func main() {
 	}
 
 	fmt.Println("Average: ", TransactionAverage("Milk powder, butter, and cheese", "All", "Friday", csvMap))
-	// fmt.Println("Largest exporter: ", TransactionAverage("Logs, wood, and wood articles", csvMap))
+	fmt.Println("Largest exporter: ", CommodityExports("Logs, wood, and wood articles", csvMap))
+	fmt.Println("Imports and exports per weekday:")
+	for day, direction := range DirectionByWeekday(csvMap) {
 
+		fmt.Printf("%s - Imports: %d; Exports: %d\n", day, direction.imports, direction.exports)
+	}
 }
